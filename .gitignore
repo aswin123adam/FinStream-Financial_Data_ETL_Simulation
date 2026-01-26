@@ -1,0 +1,14 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.env
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+# Docker volumes (if any local data)
+data/
