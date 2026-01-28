@@ -5,11 +5,33 @@ import random
 from faker import Faker
 from pydantic import BaseModel, Field
 
+class CustomerSegment(str, Enum):
+    MASS = "Mass"
+    MASS_AFFLUENT = "Mass Affluent"
+    AFFLUENT = "Affluent"
+    HIGH_NET_WORTH = "High Net Worth"
+
+class CreditTier(str, Enum):
+    POOR = "Poor"
+    FAIR = "Fair"
+    GOOD = "Good"
+    VERY_GOOD = "Very Good"
+    EXCELLENT = "Excellent"
+
+
 if __name__ == "__main__":
     print(" Import checkpoint")
 
-    fake = Faker()
-    print(f"Fake name: {fake.name()}")
-    print(f"Fake address: {fake.address()}")
-    print(f"Fake email: {fake.email()}")
-    print(f"Fake city: {fake.city()}")
+    # fake = Faker()
+    # print(f"Fake name: {fake.name()}")
+    # print(f"Fake address: {fake.address()}")
+    # print(f"Fake email: {fake.email()}")
+    # print(f"Fake city: {fake.city()}")
+
+    print("========Customer Segment ========")
+    for segment in CustomerSegment:
+        print(f"Customer Segment: {segment.value}")
+    
+    print("========Credit Tier ========")
+    for tier in CreditTier:
+        print(f"Credit Tier: {tier.value}")
