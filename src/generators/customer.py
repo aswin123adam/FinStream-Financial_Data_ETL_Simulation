@@ -74,7 +74,7 @@ if __name__ == "__main__":
             state="Leinster",
             country="Ireland",
             annual_income=82000.00,
-            credit_score=825,
+            credit_score=900,
             credit_tier=CreditTier.EXCELLENT,
             customer_segment=CustomerSegment.AFFLUENT,
             customer_since=date(2020, 5, 20)
