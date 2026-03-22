@@ -36,6 +36,8 @@ class Customer(BaseModel):
     is_active: bool = True  # Default value
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+
+
 if __name__ == "__main__":
     print(" Import checkpoint")
 
@@ -74,7 +76,7 @@ if __name__ == "__main__":
             state="Leinster",
             country="Ireland",
             annual_income=82000.00,
-            credit_score=900,
+            credit_score=850,
             credit_tier=CreditTier.EXCELLENT,
             customer_segment=CustomerSegment.AFFLUENT,
             customer_since=date(2020, 5, 20)
