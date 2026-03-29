@@ -36,56 +36,76 @@ class Customer(BaseModel):
     is_active: bool = True  # Default value
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+class CustomerGenerator:
+    SEGMENT_WEIGHTS = {
+        CustomerSegment.MASS: 60,
+        CustomerSegment.MASS_AFFLUENT: 25,
+        CustomerSegment.AFFLUENT: 12,
+        CustomerSegment.HIGH_NET_WORTH: 3
+    }
+
+    INCOME_RANGES = {
+        CustomerSegment.MASS: (20000, 50000),
+        CustomerSegment.MASS_AFFLUENT: (50000, 100000),
+        CustomerSegment.AFFLUENT: (100000, 250000),
+        CustomerSegment.HIGH_NET_WORTH: (250000, 1000000)
+    }
+
+    CREDIT_SCORE_RANGES = {
+        CustomerSegment.MASS: (550, 720),
+        CustomerSegment.MASS_AFFLUENT: (620, 780),
+        CustomerSegment.AFFLUENT: (780, 820),
+        CustomerSegment.HIGH_NET_WORTH: (820, 850)
+    }
+
+    def __init__(self):
+        self.fake = Faker()
+
+    def generate_credit_tier(self, credit_score: int) -> CreditTier:
+        if credit_score < 580:
+            return CreditTier.POOR
+        elif credit_score < 670:
+            return CreditTier.FAIR
+        elif credit_score < 740:
+            return CreditTier.GOOD
+        elif credit_score < 800:
+            return CreditTier.VERY_GOOD
+        else:
+            return CreditTier.EXCELLENT
+    
+    def generate_customer(self) -> Customer:
+            segment = random.choices(
+            population=list(self.SEGMENT_WEIGHTS.keys()),
+            weights=list(self.SEGMENT_WEIGHTS.values()),
+            k=1,
+            )[0]
+
+            min_income, max_income = self.INCOME_RANGES[segment]
+            income = round(random.uniform(min_income, max_income), 2)
+
+            credit = self.CREDIT_SCORE_RANGES[segment]
+            credit_score = random.randint(credit[0], credit[1])
+
+            print(f"Generated Customer: {segment.value} , income: {income:,.2f}, credit_score: {credit_score}")
+
+            #Generating FAke Customer Information : 
+            first_name = self.fake.first_name()
+            last_name = self.fake.last_name()
+            email = self.fake.email()
+            phone = self.fake.phone_number()
+            date_of_birth = self.fake.date_of_birth(minimum_age=18, maximum_age=80)
+            city = self.fake.city()
+            state = self.fake.state_abbr()
+            customer_since = self.fake.date_between(start_date='-10y', end_date='today')
+            country = "USA"  # Default value
+
+            # TESTING print(f"Generated Customer:\nFull Name: {first_name} {last_name},\nemail: {email} ,\nphone: {phone},\nDOB: {date_of_birth},\ncity: {city},\nstate: {state},\ncountry: {country},\ncustomer_since: {customer_since},\nGenerated Customer: {segment.value} ,\nincome: {income:,.2f},\ncredit_score: {credit_score}")
+
+            return None
 
 
 if __name__ == "__main__":
-    print(" Import checkpoint")
+    generator = CustomerGenerator()
 
-    # fake = Faker()
-    # print(f"Fake name: {fake.name()}")
-    # print(f"Fake address: {fake.address()}")
-    # print(f"Fake email: {fake.email()}")
-    # print(f"Fake city: {fake.city()}")
-
-    # print("========Customer Segment ========")
-    # for segment in CustomerSegment:
-    #     print(f"Customer Segment: {segment.value}")
-    
-    # print("========Credit Tier ========")
-    # for tier in CreditTier:
-    #     print(f"Credit Tier: {tier.value}")
-
-    # mySegment = random.choice(list(CustomerSegment))
-    # myTier = random.choice(list(CreditTier))
-
-    # print(f"Randomly selected Customer Segment: {mySegment.value}")
-    # print(f"Randomly selected Credit Tier: {myTier.value}")
-
-    print("=" * 60)
-    print("Pydantic Check")
-    print("=" * 60)
-    
-    try:
-        customer = Customer(
-            first_name="Aswin",
-            last_name="Muthusamy",
-            email="aswinmuthusamy98@gmail.com",
-            phone="123-456-7890",
-            date_of_birth=date(1998, 1, 14),
-            city="Dublin",
-            state="Leinster",
-            country="Ireland",
-            annual_income=82000.00,
-            credit_score=850,
-            credit_tier=CreditTier.EXCELLENT,
-            customer_segment=CustomerSegment.AFFLUENT,
-            customer_since=date(2020, 5, 20)
-        )
-
-        print("========== CUSTOMER INSTANCE CREATED SUCCESSFULLY ==========")
-        print(f"customer_name: {customer.first_name} {customer.last_name}")
-        print(f"credit_score: {customer.credit_score}")
-
-    except Exception as e:
-        print("Error creating Customer instance: Credit Score is not valid.")
-        print(e)
+    print("Testing SEGMENT_WEIGHTS distribution:")
+    generator.generate_customer()
