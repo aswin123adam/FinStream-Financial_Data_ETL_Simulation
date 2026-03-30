@@ -4,6 +4,7 @@ from uuid import uuid4
 import random
 from faker import Faker
 from pydantic import BaseModel, Field
+from data import domain_list, US_CITIES_BY_STATE, STATE_POPULATION_WEIGHTS
 
 class CustomerSegment(str, Enum):
     MASS = "Mass"
@@ -89,11 +90,10 @@ class CustomerGenerator:
             #Generating FAke Customer Information : 
             first_name = self.fake.first_name()
             last_name = self.fake.last_name()
-            email = self.fake.email()
+            email = self.generate_email(first_name, last_name)
             phone = self.fake.phone_number()
             date_of_birth = self.fake.date_of_birth(minimum_age=18, maximum_age=80)
-            city = self.fake.city()
-            state = self.fake.state_abbr()
+            city, state = self.generate_location()
             customer_since = self.fake.date_between(start_date='-10y', end_date='today')
             country = "USA"  # Default value
 
@@ -115,7 +115,7 @@ class CustomerGenerator:
                 customer_since=customer_since
             )
     def generate_email(self, first_name: str, last_name: str) -> str:
-        domain_list = ["gmail.com", "outlook.com", "yahoo.com", "hotmail.com", "aol.com", "protonmail.com", "zoho.com", "mail.com", "gmx.com", "icloud.com", "yandex.com", "fastmail.com", "tutanota.com", "mail.ru", "hushmail.com", "airmail.net", "lycos.com", "netcourrier.com", "zimbra.com", "rediffmail.com", "mailinator.com", "freemail.de", "freemail.ru", "email.com", "email.org", "email.ru", "freeneted.de", "bigpond.com", "verizon.net", "sky.com"]
+        # domain_list = ["gmail.com", "outlook.com", "yahoo.com", "hotmail.com", "aol.com", "protonmail.com", "zoho.com", "mail.com", "gmx.com", "icloud.com", "yandex.com", "fastmail.com", "tutanota.com", "mail.ru", "hushmail.com", "airmail.net", "lycos.com", "netcourrier.com", "zimbra.com", "rediffmail.com", "mailinator.com", "freemail.de", "freemail.ru", "email.org", "email.ru", "freeneted.de", "bigpond.com", "verizon.net", "sky.com"]
         domain = random.choice(domain_list)
         first = first_name.lower().replace(" ", "")
         last = last_name.lower().replace(" ", "")
@@ -149,26 +149,26 @@ class CustomerGenerator:
 
         pattern = random.choice(patterns)
         return f"{pattern}@{domain}"
-
-
-
-
+    
+    def generate_location(self) -> tuple[str, str]:
+    
+        states = list(STATE_POPULATION_WEIGHTS.keys())
+        weights = list(STATE_POPULATION_WEIGHTS.values())
+        state = random.choices(states, weights=weights, k=1)[0]
+        city = random.choice(US_CITIES_BY_STATE[state])
+        
+        return city, state
+    
+    
 
 if __name__ == "__main__":
-    # generator = CustomerGenerator()
+    generator = CustomerGenerator()
 
-    # print("Testing SEGMENT_WEIGHTS distribution:")
+    print("Testing SEGMENT_WEIGHTS distribution:")
 
-    # generator.generate_customer()
-    # for _ in range(3):
-    #     customer = generator.generate_customer()
-    #     print(f"Generated Customer:\nFull Name: {customer.first_name} {customer.last_name},\nemail: {customer.email} ,\nphone: {customer.phone},\nDOB: {customer.date_of_birth},\ncity: {customer.city},\nstate: {customer.state},\ncountry: {customer.country},\ncustomer_since: {customer.customer_since},\nGenerated Customer: {customer.customer_segment.value} ,\nincome: {customer.annual_income:,.2f},\ncredit_score: {customer.credit_score}")
-    #     print("-" * 80)
-    #     print("-" * 80)
-
-    test_name = [("Adam", "Christo"), ("Aswin", "Muthusamy"), ("Ganga", "Hariharan")]
-
-    for first,last in test_name:
-        for _ in range(3):
-            email = CustomerGenerator().generate_email(first, last)
-            print(f"Generated Email for {first} {last}: {email}")
+    generator.generate_customer()
+    for _ in range(3):
+        customer = generator.generate_customer()
+        print(f"Generated Customer:\nFull Name: {customer.first_name} {customer.last_name},\nemail: {customer.email} ,\nphone: {customer.phone},\nDOB: {customer.date_of_birth},\ncity: {customer.city},\nstate: {customer.state},\ncountry: {customer.country},\ncustomer_since: {customer.customer_since},\nGenerated Customer: {customer.customer_segment.value} ,\nincome: {customer.annual_income:,.2f},\ncredit_score: {customer.credit_score}")
+        print("-" * 80)
+        print("-" * 80)
