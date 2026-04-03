@@ -4,7 +4,7 @@ from uuid import uuid4
 import random
 from faker import Faker
 from pydantic import BaseModel, Field
-from data import domain_list, US_CITIES_BY_STATE, STATE_POPULATION_WEIGHTS
+from .data import domain_list, US_CITIES_BY_STATE, STATE_POPULATION_WEIGHTS
 
 class CustomerSegment(str, Enum):
     MASS = "Mass"
