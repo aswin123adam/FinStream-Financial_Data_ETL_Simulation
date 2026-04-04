@@ -13,7 +13,14 @@ TOPIC_NAME = "finstream.customers"
 
 if __name__ == "__main__":
     generator = CustomerGenerator()
-
     customer = generator.generate_customer()
 
-    print(f"Generated Customer:\nFull Name: {customer.first_name} {customer.last_name},\nemail: {customer.email} ,\nphone: {customer.phone},\nDOB: {customer.date_of_birth},\ncity: {customer.city},\nstate: {customer.state},\ncountry: {customer.country},\ncustomer_since: {customer.customer_since},\nGenerated Customer: {customer.customer_segment.value} ,\nincome: {customer.annual_income:,.2f},\ncredit_score: {customer.credit_score}")
+    producer = KafkaProducer(bootstrap_servers=KAFKA_SERVER)
+
+    print(f"Created customer info : {customer.first_name} {customer.last_name}")
+    customer_json = customer.model_dump_json()
+    customer_bytes = customer_json.encode("utf-8")
+
+    producer.send(TOPIC_NAME, customer_bytes)
+    producer.flush()
+    print(f"Customer info sent to Kafka topic: {TOPIC_NAME}")
