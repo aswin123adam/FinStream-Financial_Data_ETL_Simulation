@@ -25,7 +25,7 @@ CUSTOMER_SCHEMA = StructType([
     StructField("created_at", StringType(), True),
 ])
 
-def process_bronze_layer(spark, topic: str) -> DataFrame:
+def process_bronze_layer_customers(spark, topic: str) -> DataFrame:
     df = spark.read\
         .format("kafka")\
         .option("kafka.bootstrap.servers", KAFKA_SERVER)\
@@ -34,8 +34,7 @@ def process_bronze_layer(spark, topic: str) -> DataFrame:
         .load()
     return df
 
-def parse_bronze_data(df: DataFrame) -> DataFrame:
-    schema = "customer_id STRING, name STRING, email STRING, created_at TIMESTAMP"
+def parse_bronze_data_customers(df: DataFrame) -> DataFrame:
     parsed_df = df\
         .selectExpr("CAST(value AS STRING) as json_data", "timestamp as kafka_timestamp")\
         .select(from_json(col("json_data"), CUSTOMER_SCHEMA).alias("data"),
@@ -45,7 +44,7 @@ def parse_bronze_data(df: DataFrame) -> DataFrame:
     
     return parsed_df
 
-def save_to_parquet(df: DataFrame, path: str):
+def save_to_parquet_customers(df: DataFrame, path: str):
     df.write.mode("append").parquet(path)
 
 if __name__ == "__main__":
@@ -53,9 +52,9 @@ if __name__ == "__main__":
 
     print("Reading from KAFKA topic...")
 
-    raw_data = process_bronze_layer(spark, CUSTOMERS_TOPIC)
-    processed_data = parse_bronze_data(raw_data)
-    save_to_parquet(processed_data, "parquet_output/customers")
+    raw_data = process_bronze_layer_customers(spark, CUSTOMERS_TOPIC)
+    processed_data = parse_bronze_data_customers(raw_data)
+    save_to_parquet_customers(processed_data, "parquet_output/customers")
     
     print("Schema :")
     processed_data.summary().show()
