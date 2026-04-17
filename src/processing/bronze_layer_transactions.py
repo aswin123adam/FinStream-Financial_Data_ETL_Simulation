@@ -46,7 +46,7 @@ if __name__ == "__main__":
     processed_data = parse_bronze_data_transactions(raw_data)
     save_to_parquet_transactions(processed_data, "parquet_output/transactions")
 
-    processed_data.show(10, truncate=False)
+    processed_data.show(truncate=False)
 
     spark.stop()
 
